@@ -8,12 +8,15 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@microblink/blinkid-in-browser-sdk": "^5.8.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
+    "vue-feather-icons": "^5.1.0",
     "vue-property-decorator": "^8.4.2",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "@types/vue-feather-icons": "^5.0.1",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
