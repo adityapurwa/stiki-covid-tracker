@@ -15,7 +15,11 @@
         </div>
       </div>
       <div class="overlay" v-if="covidStatus !== 'Neutral'">
-        <div class="result positive" v-if="covidStatus === 'Positive'">
+        <div
+          class="result positive"
+          v-if="covidStatus === 'Negative'"
+          key="positive"
+        >
           <div class="result-left">
             <CheckCircleIcon size="128" />
           </div>
@@ -26,7 +30,11 @@
             </h4>
           </div>
         </div>
-        <div class="result negative" v-if="covidStatus === 'Negative'">
+        <div
+          class="result negative"
+          v-if="covidStatus === 'Positive'"
+          key="negative"
+        >
           <div class="result-left">
             <AlertCircleIcon size="128" />
           </div>
@@ -129,7 +137,6 @@ export default class App extends Vue {
   private async getCovidStatus(
     result: BlinkIdRecognizerResult
   ): Promise<CovidStatus> {
-    console.log(result);
     const extra = result.additionalAddressInformation.split("\n");
     const res = await http.post("scan", {
       nik: result.documentNumber,
@@ -153,12 +160,7 @@ export default class App extends Vue {
     const firstLogDate = new Date(firstLog.testDate);
     const now = new Date();
     const diff = now.getTime() - firstLogDate.getTime();
-    console.log({
-      firstLogDate,
-      now,
-      diff: diff / 1000 / 60 / 60 / 24
-    });
-    if (diff / 1000 / 60 / 60 / 24 <= 7) {
+    if (diff / 1000 / 60 / 60 / 24 <= 7 && firstLog.status === "positive") {
       return CovidStatus.Positive;
     }
     return CovidStatus.Negative;
