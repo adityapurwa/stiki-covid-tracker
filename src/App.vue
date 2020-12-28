@@ -156,9 +156,9 @@ export default class App extends Vue {
     console.log({
       firstLogDate,
       now,
-      diff: diff * 60 * 60 * 24
+      diff: diff / 1000 / 60 / 60 / 24
     });
-    if (diff * 60 * 60 * 24 <= 7) {
+    if (diff / 1000 / 60 / 60 / 24 <= 7) {
       return CovidStatus.Positive;
     }
     return CovidStatus.Negative;
