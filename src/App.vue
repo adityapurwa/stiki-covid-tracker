@@ -59,6 +59,7 @@ import {
 import { BlinkIdRecognizerResult } from "@microblink/blinkid-in-browser-sdk/types/Recognizers/BlinkID/Generic/BlinkIdRecognizer";
 
 import { CheckCircleIcon, AlertCircleIcon } from "vue-feather-icons";
+import http from "@/api/http";
 
 enum CovidStatus {
   Neutral = "Neutral",
@@ -128,13 +129,39 @@ export default class App extends Vue {
   private async getCovidStatus(
     result: BlinkIdRecognizerResult
   ): Promise<CovidStatus> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(
-          Math.random() * 10 > 5 ? CovidStatus.Positive : CovidStatus.Negative
-        );
-      }, 3000);
+    console.log(result);
+    const extra = result.additionalAddressInformation.split("\n");
+    const res = await http.post("scan", {
+      nik: result.documentNumber,
+      name: result.fullName,
+      birthday: new Date(
+        result.dateOfBirth.year,
+        result.dateOfBirth.month,
+        result.dateOfBirth.day
+      ),
+      birthplace: result.placeOfBirth,
+      address1: result.address,
+      address2: result.additionalAddressInformation,
+      city: extra[1],
+      province: extra[0]
     });
+    const data = res.data;
+    const firstLog = data.logs[0];
+    if (!firstLog) {
+      return CovidStatus.Negative;
+    }
+    const firstLogDate = new Date(firstLog.testDate);
+    const now = new Date();
+    const diff = now.getTime() - firstLogDate.getTime();
+    console.log({
+      firstLogDate,
+      now,
+      diff: diff * 60 * 60 * 24
+    });
+    if (diff * 60 * 60 * 24 <= 7) {
+      return CovidStatus.Positive;
+    }
+    return CovidStatus.Negative;
   }
 
   destroy() {
